@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassQ for departments</title>
+<meta name="description" content="One ClassQ plan for every instructor in a department: no limits on courses, students or TAs, billed yearly by invoice.">
+<link rel="icon" type="image/png" href="assets/icon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&display=swap" rel="stylesheet">
+<style>
+  /* The app's "Timetable" palette: blue is what's open, orange is now. */
+  :root {
+    --page: #F4F6FA;
+    --surface: #FFFFFF;
+    --track: #E9EDF5;
+    --rule: #DDE2EC;
+    --ink: #121A2B;
+    --ink-2: #414B60;
+    --muted: #5B6477;
+    --blue: #2747E8;
+    --blue-soft: #E3E9FF;
+    --blue-edge: rgba(39, 71, 232, 0.32);
+    --now: #F26B1D;
+    --now-text: #B8440A;
+    --on-blue-muted: #DCE3FF;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    font-family: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-stretch: 100%;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--blue); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px;
+  }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* Headings are semi-condensed, times condensed, as in the app. */
+  h1, h2, .wordmark {
+    font-stretch: 87.5%; font-weight: 800; letter-spacing: -0.01em; word-spacing: 0.04em; margin: 0;
+  }
+  h1 { font-size: clamp(40px, 6.2vw, 68px); line-height: 1.0; }
+  h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.05; }
+  /* Smaller headings keep the text width: condensed type crowds its spaces at this size. */
+  h3 { font-size: 20px; line-height: 1.25; font-weight: 700; margin: 0; }
+  .time { font-stretch: 75%; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ── Top bar ── */
+  .bar { border-bottom: 1px solid var(--rule); background: var(--page); }
+  .bar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .wordmark { display: flex; align-items: center; gap: 10px; font-size: 24px; color: var(--ink); text-decoration: none; }
+  .wordmark img { width: 32px; height: 32px; border-radius: 8px; }
+  .bar nav { display: flex; gap: 24px; font-size: 15px; font-weight: 600; }
+  .bar nav a { color: var(--ink-2); text-decoration: none; }
+  .bar nav a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .bar nav a.extra { display: none; } }
+
+  /* ── Hero ── */
+  .hero { padding: 64px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+  @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .lede { font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 30em; margin: 22px 0 30px; }
+  .stores { display: flex; gap: 12px; flex-wrap: wrap; }
+  .store {
+    display: flex; align-items: center; gap: 12px; padding: 10px 18px 10px 14px;
+    border-radius: 12px; background: var(--ink); color: #fff; min-width: 196px;
+  }
+  .store svg { width: 26px; height: 26px; flex-shrink: 0; }
+  .store span { display: flex; flex-direction: column; line-height: 1.15; }
+  .store small { font-size: 12px; opacity: 0.8; }
+  .store b { font-size: 17px; font-weight: 700; }
+  .fine { margin: 14px 0 0; font-size: 15px; color: var(--muted); }
+
+  /* The timetable: today, the now line, what's open. */
+  .day {
+    background: var(--page); border: 1px solid var(--rule); border-radius: 28px;
+    padding: 26px 22px 18px; max-width: 460px; width: 100%; justify-self: center;
+    box-shadow: 0 30px 60px -30px rgba(18, 26, 43, 0.28);
+  }
+  .day-title { font-stretch: 87.5%; font-weight: 800; font-size: 34px; line-height: 1.05; margin: 0; }
+  .day-pick { display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 18px; padding: 5px 12px 5px 14px;
+    border: 1px solid var(--blue-edge); border-radius: 18px; background: var(--surface);
+    color: var(--blue); font-weight: 700; font-size: 14px; }
+  .row { display: grid; grid-template-columns: 86px 1fr; gap: 12px; align-items: start; }
+  .rail { padding-top: 3px; }
+  .rail .time { display: block; font-size: 17px; line-height: 1.15; }
+  .rail small { display: block; font-size: 13px; color: var(--muted); }
+  .open {
+    background: var(--blue); color: #fff; border-radius: 18px; padding: 16px 16px 14px;
+  }
+  .open .status { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--on-blue-muted); }
+  .open .status i { width: 8px; height: 8px; border-radius: 50%; background: #FF9A4D; display: inline-block; }
+  .open h3 { color: #fff; margin: 6px 0 2px; font-size: 22px; font-stretch: 87.5%; font-weight: 800; }
+  .open p { margin: 0 0 12px; font-size: 15px; color: var(--on-blue-muted); }
+  .open .go { display: block; text-align: center; background: #fff; color: var(--blue); font-weight: 700;
+    border-radius: 12px; padding: 9px; font-size: 15px; }
+  .now { display: grid; grid-template-columns: 86px 1fr; gap: 12px; align-items: center; margin: 14px 0 4px; }
+  .now .time { color: var(--now-text); font-size: 14px; }
+  .now .line { position: relative; height: 2px; background: var(--now); }
+  .now .line::before { content: ""; position: absolute; left: -2px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--now); }
+  .next { border-bottom: 1px solid var(--rule); padding: 11px 0; }
+  .next:last-child { border-bottom: 0; }
+  .next .what b { display: block; font-weight: 600; font-size: 16px; line-height: 1.3; }
+  .next .what small { color: var(--muted); font-size: 14px; }
+
+  /* ── Sections ── */
+  section { padding: 76px 0; }
+  section.white { background: var(--surface); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .intro { max-width: 40em; margin: 14px 0 44px; font-size: 19px; color: var(--ink-2); }
+
+  /* How a session runs: the markers are times, because it is a sequence. */
+  .run { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 820px; }
+  .run li { display: grid; grid-template-columns: 132px 1fr; gap: 24px; padding: 24px 0; border-top: 1px solid var(--rule); }
+  .run li:first-child { border-top: 0; padding-top: 0; }
+  .run .time { font-size: 22px; line-height: 1.2; color: var(--blue); }
+  .run li.is-now .time { color: var(--now-text); }
+  .run p { margin: 6px 0 0; color: var(--ink-2); }
+  @media (max-width: 560px) { .run li { grid-template-columns: 1fr; gap: 6px; } }
+
+  /* Screens */
+  .screens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  @media (max-width: 860px) { .screens { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; } }
+  .screens figure { margin: 0; }
+  .screens img { width: 100%; height: auto; border-radius: 26px; border: 1px solid var(--rule); background: var(--page); }
+  .screens figcaption { margin-top: 14px; }
+  .screens figcaption b { display: block; font-size: 17px; }
+  .screens figcaption span { color: var(--muted); font-size: 15px; }
+
+  /* Who it's for */
+  .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .sides { grid-template-columns: 1fr; } }
+  .side { background: var(--surface); border-radius: var(--radius); padding: 26px 26px 10px; }
+  .white .side { background: var(--page); }
+  .side ul { list-style: none; margin: 14px 0 0; padding: 0; }
+  .side li { padding: 12px 0; border-top: 1px solid var(--rule); }
+  .side li b { display: block; font-weight: 700; }
+  .side li span { color: var(--ink-2); font-size: 16px; }
+  .safe { margin-top: 20px; background: var(--blue-soft); border-radius: var(--radius); padding: 24px 26px; }
+  .safe h3 { margin-bottom: 8px; }
+  .safe p { margin: 0; color: var(--ink); max-width: 52em; }
+
+  /* Pricing */
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+  @media (max-width: 860px) { .plans { grid-template-columns: 1fr; max-width: 440px; } }
+  .plan { background: var(--page); border: 1px solid var(--rule); border-radius: var(--radius); padding: 26px; display: flex; flex-direction: column; }
+  .plan .price { font-stretch: 87.5%; font-weight: 800; font-size: 40px; line-height: 1; margin: 14px 0 4px; }
+  .plan .price small { font-size: 16px; font-weight: 600; color: var(--muted); font-stretch: 100%; }
+  .plan .per { color: var(--muted); font-size: 15px; margin: 0 0 16px; }
+  .plan ul { margin: 0 0 8px; padding: 0; list-style: none; flex: 1; }
+  .plan li { padding: 8px 0; border-top: 1px solid var(--rule); font-size: 16px; }
+  .custom { margin-top: 20px; color: var(--ink-2); }
+
+  /* FAQ */
+  .faq { max-width: 760px; }
+  .faq details { border-top: 1px solid var(--rule); padding: 18px 0; }
+  .faq details:last-child { border-bottom: 1px solid var(--rule); }
+  .faq summary { cursor: pointer; font-weight: 700; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--blue); font-size: 24px; line-height: 1; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq p { margin: 10px 0 0; color: var(--ink-2); }
+
+  /* Closing and footer */
+  .close { text-align: left; }
+  .close p { color: var(--ink-2); font-size: 19px; margin: 14px 0 26px; }
+  footer { padding: 32px 0 48px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+  footer a { color: var(--ink-2); }
+
+  /* ── This page ── */
+  .lead { max-width: 36em; font-size: 20px; color: var(--ink-2); margin: 18px 0 0; }
+  .includes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 40px; margin: 0; padding: 0; list-style: none; max-width: 880px; }
+  @media (max-width: 720px) { .includes { grid-template-columns: 1fr; } }
+  .includes li { padding: 14px 0; border-top: 1px solid var(--rule); }
+  .includes b { display: block; }
+  .includes span { color: var(--ink-2); font-size: 16px; }
+  .prices { width: 100%; max-width: 560px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+  .prices th, .prices td { text-align: left; padding: 14px 20px; border-top: 1px solid var(--rule); font-size: 17px; }
+  .prices thead th { border-top: 0; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .prices td.amount { font-stretch: 87.5%; font-weight: 800; font-size: 24px; white-space: nowrap; }
+  .prices td.amount small { font-size: 14px; font-weight: 600; color: var(--muted); font-stretch: 100%; }
+  .terms { max-width: 560px; color: var(--ink-2); font-size: 16px; margin: 16px 0 0; padding-left: 20px; }
+  .terms li { margin: 6px 0; }
+  .pilot { max-width: 560px; margin: 24px 0 0; padding: 18px 20px; border-radius: var(--radius); background: var(--blue-soft); color: var(--ink); }
+  form.request { max-width: 620px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  @media (max-width: 640px) { form.request { grid-template-columns: 1fr; } }
+  form.request .full { grid-column: 1 / -1; }
+  form.request label { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600; }
+  form.request label em { font-style: normal; font-weight: 400; color: var(--muted); }
+  form.request input, form.request select, form.request textarea {
+    font: inherit; font-size: 16px; color: var(--ink); background: var(--surface);
+    border: 1.5px solid #7E889D; border-radius: 12px; padding: 11px 14px; min-height: 46px;
+  }
+  form.request textarea { min-height: 120px; resize: vertical; }
+  form.request input:focus, form.request select:focus, form.request textarea:focus { outline: 3px solid var(--blue-edge); border-color: var(--blue); }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .send { justify-self: start; font: inherit; font-weight: 700; font-size: 17px; color: #fff; background: var(--blue); border: 0; border-radius: 12px; padding: 13px 26px; cursor: pointer; }
+  .send[disabled] { opacity: 0.6; cursor: default; }
+  .status { min-height: 1.5em; margin: 0; font-size: 16px; }
+  .status.error { color: #B8251E; }
+  .thanks { max-width: 620px; padding: 24px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="wordmark" href="/"><img src="assets/icon-64.png" alt="" width="32" height="32">ClassQ</a>
+    <nav aria-label="Sections">
+      <a class="extra" href="#pricing">Pricing</a>
+      <a class="extra" href="#request">Get a quote</a>
+      <a href="support.html">Support</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <h1>ClassQ for departments.</h1>
+      <p class="lead">
+        One plan for every instructor in your department or school, with no
+        limits on courses, students or TAs. Your admins choose who is on it,
+        and you pay once a year by invoice.
+      </p>
+    </div>
+  </section>
+
+  <section class="white" aria-labelledby="includes-title">
+    <div class="wrap">
+      <h2 id="includes-title">What the plan covers.</h2>
+      <p class="intro">Everything in Pro, without its limits, for everyone on the plan.</p>
+      <ul class="includes">
+        <li><b>No limits</b><span>Courses, students per course and TAs, for every instructor on the plan.</span></li>
+        <li><b>Your admins choose who is on it</b><span>They add and remove instructors by email in the app. Instructors are covered when they sign in with that email.</span></li>
+        <li><b>Every feature</b><span>AI question grouping, voice replies with transcripts, pinned questions, reports and reminders.</span></li>
+        <li><b>One invoice</b><span>With your purchase order number, paid by bank transfer or card.</span></li>
+        <li><b>Help getting started</b><span>Setting up terms and weekly schedules with your instructors, by email or a call.</span></li>
+        <li><b>Students and TAs stay free</b><span>Students join with a join code. TAs are added by their instructor.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="pricing" aria-labelledby="pricing-title">
+    <div class="wrap">
+      <h2 id="pricing-title">Pricing.</h2>
+      <p class="intro">Per instructor, per year. The more instructors, the less each one costs.</p>
+      <table class="prices">
+        <thead><tr><th scope="col">Instructors on the plan</th><th scope="col">Each, per year</th></tr></thead>
+        <tbody>
+          <tr><td>5 to 19</td><td class="amount">$149</td></tr>
+          <tr><td>20 to 49</td><td class="amount">$129</td></tr>
+          <tr><td>50 or more</td><td class="amount">$109</td></tr>
+          <tr><td>A whole campus</td><td class="amount"><small>We'll quote</small></td></tr>
+        </tbody>
+      </table>
+      <ul class="terms">
+        <li>At least 5 instructors. A department admin counts as one.</li>
+        <li>Billed yearly in advance, due 30 days after the invoice.</li>
+        <li>Two years paid up front: 10% off.</li>
+        <li>Instructors added during the year are billed for the months left.</li>
+      </ul>
+      <p class="pilot"><b>Try it for a term, free.</b> Up to 5 instructors, for one term, once per department. No purchase order needed.</p>
+    </div>
+  </section>
+
+  <section class="white" aria-labelledby="buying-title">
+    <div class="wrap">
+      <h2 id="buying-title">How buying works.</h2>
+      <p class="intro">Built for how schools buy: a quote, a purchase order, an invoice.</p>
+      <ol class="run">
+        <li>
+          <span class="time">Today</span>
+          <div>
+            <h3>Tell us about your department</h3>
+            <p>How many instructors, roughly how many students, and when you'd like to start. The form is below.</p>
+          </div>
+        </li>
+        <li>
+          <span class="time">Within a day</span>
+          <div>
+            <h3>We reply with a quote</h3>
+            <p>Seats, dates and the total, and an offer of a call. We fill in your supplier and security forms too.</p>
+          </div>
+        </li>
+        <li>
+          <span class="time">When you're ready</span>
+          <div>
+            <h3>You send a purchase order</h3>
+            <p>Or sign the quote. We set up the plan the same day, and your admins add instructors by email.</p>
+          </div>
+        </li>
+        <li>
+          <span class="time">30 days</span>
+          <div>
+            <h3>You pay the invoice</h3>
+            <p>By bank transfer or card. We send a renewal quote two months before the year ends.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="request" aria-labelledby="request-title">
+    <div class="wrap">
+      <h2 id="request-title">Get a quote.</h2>
+      <p class="intro">We reply within one business day. Prefer email? Write to <a href="mailto:support@classq.tech">support@classq.tech</a>.</p>
+      <form class="request" id="request-form" novalidate>
+        <label>Your name<input name="name" autocomplete="name" maxlength="120"></label>
+        <label>Work email<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+        <label class="full">School and department<input name="organization" autocomplete="organization" required maxlength="200" placeholder="Physics, State University"></label>
+        <label><span>Your role <em>(optional)</em></span><input name="role" maxlength="120" placeholder="Chair, director of teaching…"></label>
+        <label>How many instructors<input name="instructors" type="number" min="1" max="10000" inputmode="numeric"></label>
+        <label><span>Students, roughly <em>(optional)</em></span><input name="students" type="number" min="1" inputmode="numeric"></label>
+        <label>When would you start?
+          <select name="timeframe">
+            <option value="">Choose one</option>
+            <option>This term</option>
+            <option>Next term</option>
+            <option>Next academic year</option>
+            <option>Just looking for now</option>
+          </select>
+        </label>
+        <label class="full"><span>Anything else <em>(optional)</em></span><textarea name="message" maxlength="4000" placeholder="Courses, class sizes, how you'd use ClassQ, forms your school needs…"></textarea></label>
+        <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="send full" type="submit">Send</button>
+        <p class="status full" id="request-status" role="status"></p>
+      </form>
+      <div class="thanks" id="request-thanks" hidden>
+        <h3>Thanks, we have it.</h3>
+        <p>We'll reply to <b id="thanks-email"></b> within one business day with a quote.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="white" aria-labelledby="faq-title">
+    <div class="wrap">
+      <h2 id="faq-title">Questions, answered.</h2>
+      <div class="faq" style="margin-top:32px">
+        <details>
+          <summary>Some of our instructors already pay for ClassQ.</summary>
+          <p>Once they're on the department's plan it covers them, and they can cancel their own subscription in the App Store or Google Play.</p>
+        </details>
+        <details>
+          <summary>Can we add instructors during the year?</summary>
+          <p>Yes. Your admins add them in the app while there are places left. For more places, write to us: we add them and invoice the months left in the year.</p>
+        </details>
+        <details>
+          <summary>What happens if we don't renew?</summary>
+          <p>The plan stops covering instructors on its last day. Their courses, questions and answers stay, and they can keep teaching on a plan of their own.</p>
+        </details>
+        <details>
+          <summary>What about student data?</summary>
+          <p>Students see each other's questions without names; instructors and TAs see who asked. What we keep and who handles it is in our <a href="privacy.html">privacy policy</a>. Send us your school's data agreement and we'll review it.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 ClassQ</span>
+    <nav aria-label="Legal and support">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="delete-account.html">Delete your account</a>
+      <a href="support.html">Support</a>
+      <a href="mailto:support@classq.tech">support@classq.tech</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // The form goes to the department-request edge function. It checks a hidden
+  // field and how long the form was open, so a bot's quick fill is ignored.
+  (function () {
+    var ENDPOINT = 'https://mupzsxyzqudkuljqtsdo.supabase.co/functions/v1/department-request';
+    var form = document.getElementById('request-form');
+    var status = document.getElementById('request-status');
+    var startedAt = Date.now();
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var data = new FormData(form);
+      var email = String(data.get('email') || '').trim();
+      var organization = String(data.get('organization') || '').trim();
+      status.className = 'status full';
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { status.className += ' error'; status.textContent = 'Enter your work email address.'; return; }
+      if (!organization) { status.className += ' error'; status.textContent = 'Enter your school and department.'; return; }
+      var button = form.querySelector('button');
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      var body = { started_at: startedAt };
+      data.forEach(function (value, key) { body[key] = value; });
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (res) { return res.json().catch(function () { return {}; }).then(function (json) { return { ok: res.ok && json.ok, json: json }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error(result.json.error || '');
+          form.hidden = true;
+          document.getElementById('thanks-email').textContent = email;
+          document.getElementById('request-thanks').hidden = false;
+        })
+        .catch(function (err) {
+          button.disabled = false;
+          status.className += ' error';
+          status.innerHTML = '';
+          status.append((err && err.message) || "Couldn't send it. ");
+          if (!(err && err.message)) {
+            var a = document.createElement('a');
+            a.href = 'mailto:support@classq.tech?subject=' + encodeURIComponent('Department plan: ' + organization);
+            a.textContent = 'Email support@classq.tech instead.';
+            status.append(a);
+          }
+        });
+    });
+  })();
+</script>
+</body>
+</html>
