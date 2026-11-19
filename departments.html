@@ -212,6 +212,9 @@
   .send[disabled] { opacity: 0.6; cursor: default; }
   .status { min-height: 1.5em; margin: 0; font-size: 16px; }
   .status.error { color: #B8251E; }
+  .estimate { align-self: end; margin: 0 0 12px; font-size: 17px; color: var(--ink-2); }
+  .estimate b { font-stretch: 87.5%; font-size: 24px; color: var(--ink); }
+  .fine { font-size: 14px; color: var(--muted); margin: 0; }
   .thanks { max-width: 620px; padding: 24px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--rule); }
 </style>
 </head>
@@ -221,7 +224,7 @@
     <a class="wordmark" href="/"><img src="assets/icon-64.png" alt="" width="32" height="32">ClassQ</a>
     <nav aria-label="Sections">
       <a class="extra" href="#pricing">Pricing</a>
-      <a class="extra" href="#request">Get a quote</a>
+      <a class="extra" href="#buy">Buy</a>
       <a href="support.html">Support</a>
     </nav>
   </div>
@@ -234,7 +237,7 @@
       <p class="lead">
         One plan for every instructor in your department or school, with no
         limits on courses, students or TAs. Your admins choose who is on it,
-        and you pay once a year by invoice.
+        and you pay once a year, by card or by invoice.
       </p>
     </div>
   </section>
@@ -245,9 +248,9 @@
       <p class="intro">Everything in Pro, without its limits, for everyone on the plan.</p>
       <ul class="includes">
         <li><b>No limits</b><span>Courses, students per course and TAs, for every instructor on the plan.</span></li>
-        <li><b>Your admins choose who is on it</b><span>They add and remove instructors by email in the app. Instructors are covered when they sign in with that email.</span></li>
+        <li><b>Your admins choose who is on it</b><span>They add and remove instructors in the app, by school email. Admins who don't teach don't take a place.</span></li>
         <li><b>Every feature</b><span>AI question grouping, voice replies with transcripts, pinned questions, reports and reminders.</span></li>
-        <li><b>One invoice</b><span>With your purchase order number, paid by bank transfer or card.</span></li>
+        <li><b>Card or invoice</b><span>Buy by card in a few minutes, or pay an invoice on your purchase order.</span></li>
         <li><b>Help getting started</b><span>Setting up terms and weekly schedules with your instructors, by email or a call.</span></li>
         <li><b>Students and TAs stay free</b><span>Students join with a join code. TAs are added by their instructor.</span></li>
       </ul>
@@ -268,8 +271,8 @@
         </tbody>
       </table>
       <ul class="terms">
-        <li>At least 5 instructors. A department admin counts as one.</li>
-        <li>Billed yearly in advance, due 30 days after the invoice.</li>
+        <li>At least 5 instructors. Admins who don't teach are free.</li>
+        <li>Billed yearly in advance: by card, renewing each year until you cancel, or by invoice, due in 30 days.</li>
         <li>Two years paid up front: 10% off.</li>
         <li>Instructors added during the year are billed for the months left.</li>
       </ul>
@@ -285,39 +288,58 @@
         <li>
           <span class="time">Today</span>
           <div>
-            <h3>Tell us about your department</h3>
-            <p>How many instructors, roughly how many students, and when you'd like to start. The form is below.</p>
+            <h3>Buy by card, or ask for a quote</h3>
+            <p>Choose how many instructors and pay by card below, in a few minutes. Paying on a purchase order instead? Ask for a quote and we reply within a day.</p>
           </div>
         </li>
         <li>
-          <span class="time">Within a day</span>
+          <span class="time">Right after</span>
           <div>
-            <h3>We reply with a quote</h3>
-            <p>Seats, dates and the total, and an offer of a call. We fill in your supplier and security forms too.</p>
+            <h3>Add your instructors</h3>
+            <p>Sign in to ClassQ with the email you bought with, and open Settings, then Department. Add instructors by their school email; each is covered as soon as they're added.</p>
           </div>
         </li>
         <li>
-          <span class="time">When you're ready</span>
+          <span class="time">Any time</span>
           <div>
-            <h3>You send a purchase order</h3>
-            <p>Or sign the quote. We set up the plan the same day, and your admins add instructors by email.</p>
+            <h3>Change who is on it</h3>
+            <p>Remove someone and their place is free for a colleague. Their courses, questions and answers stay.</p>
           </div>
         </li>
         <li>
-          <span class="time">30 days</span>
+          <span class="time">Each year</span>
           <div>
-            <h3>You pay the invoice</h3>
-            <p>By bank transfer or card. We send a renewal quote two months before the year ends.</p>
+            <h3>It renews</h3>
+            <p>A card plan renews by itself until you cancel. For an invoice plan, we send a renewal quote two months before the year ends.</p>
           </div>
         </li>
       </ol>
     </div>
   </section>
 
+  <section class="white" id="buy" aria-labelledby="buy-title">
+    <div class="wrap">
+      <h2 id="buy-title">Buy by card.</h2>
+      <p class="intro">You'll be the plan's admin. Use your school email: instructors can only be added with addresses at the same school.</p>
+      <form class="request" id="buy-form" novalidate>
+        <label>Department<input name="department" required maxlength="120" placeholder="Physics"></label>
+        <label>School<input name="institution" autocomplete="organization" required maxlength="160" placeholder="UNC Charlotte"></label>
+        <label>Your name<input name="name" autocomplete="name" maxlength="120"></label>
+        <label>Your school email<input name="email" type="email" autocomplete="email" required maxlength="200" placeholder="you@uncc.edu"></label>
+        <label>Instructors<input name="seats" type="number" min="5" max="2000" value="5" inputmode="numeric" required></label>
+        <p class="estimate" id="buy-estimate" aria-live="polite"></p>
+        <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="send full" type="submit">Continue to payment</button>
+        <p class="status full" id="buy-status" role="status"></p>
+        <p class="full fine">Payment is handled by Stripe. The plan renews each year until you cancel; change the number of instructors or cancel by writing to <a href="mailto:support@classq.tech">support@classq.tech</a>. By buying you agree to our <a href="terms.html">terms</a>.</p>
+      </form>
+    </div>
+  </section>
+
   <section id="request" aria-labelledby="request-title">
     <div class="wrap">
-      <h2 id="request-title">Get a quote.</h2>
-      <p class="intro">We reply within one business day. Prefer email? Write to <a href="mailto:support@classq.tech">support@classq.tech</a>.</p>
+      <h2 id="request-title">Or pay by invoice.</h2>
+      <p class="intro">For a purchase order, a whole campus or a free pilot term. We reply within one business day with a quote. Prefer email? Write to <a href="mailto:support@classq.tech">support@classq.tech</a>.</p>
       <form class="request" id="request-form" novalidate>
         <label>Your name<input name="name" autocomplete="name" maxlength="120"></label>
         <label>Work email<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
@@ -352,7 +374,15 @@
       <div class="faq" style="margin-top:32px">
         <details>
           <summary>Some of our instructors already pay for ClassQ.</summary>
-          <p>Once they're on the department's plan it covers them, and they can cancel their own subscription in the App Store or Google Play.</p>
+          <p>The department's plan covers them as soon as they're added. The app then shows them how to turn off renewal of their own subscription: they keep what they've paid for, and the department's plan carries on after. Or they can keep their own plan and give the place back.</p>
+        </details>
+        <details>
+          <summary>Do instructors need a school email?</summary>
+          <p>Yes: they're added with their address at your school, and their ClassQ account has to use that address. Adjuncts with only a personal address? Write to us and we'll add them.</p>
+        </details>
+        <details>
+          <summary>Does the person who buys it have to teach?</summary>
+          <p>No. Admins manage the plan without taking a place. An admin who teaches adds their own email as an instructor.</p>
         </details>
         <details>
           <summary>Can we add instructors during the year?</summary>
@@ -385,6 +415,50 @@
 </footer>
 
 <script>
+  // "Buy by card": the department-checkout edge function opens a Stripe
+  // Checkout page. The prices here are only an estimate; Stripe charges the
+  // price set there.
+  (function () {
+    var CHECKOUT = 'https://mupzsxyzqudkuljqtsdo.supabase.co/functions/v1/department-checkout';
+    var TIERS = [[50, 125], [20, 148], [1, 171]];
+    var form = document.getElementById('buy-form');
+    var estimate = document.getElementById('buy-estimate');
+    var status = document.getElementById('buy-status');
+    var startedAt = Date.now();
+    function show() {
+      var n = parseInt(form.seats.value, 10);
+      if (!(n >= 5)) { estimate.textContent = 'At least 5 instructors.'; return; }
+      var each = TIERS.filter(function (t) { return n >= t[0]; })[0][1];
+      estimate.innerHTML = '<b>$' + (each * n).toLocaleString('en-US') + '</b> a year, $' + each + ' each';
+    }
+    form.seats.addEventListener('input', show);
+    show();
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var data = new FormData(form);
+      var body = { started_at: startedAt };
+      data.forEach(function (value, key) { body[key] = value; });
+      status.className = 'status full';
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(body.email || '').trim())) { status.className += ' error'; status.textContent = 'Enter your school email address.'; return; }
+      if (!String(body.department || '').trim() || !String(body.institution || '').trim()) { status.className += ' error'; status.textContent = 'Enter your department and your school.'; return; }
+      if (!(parseInt(body.seats, 10) >= 5)) { status.className += ' error'; status.textContent = 'Choose at least 5 instructors.'; return; }
+      var button = form.querySelector('button');
+      button.disabled = true;
+      status.textContent = 'Opening the payment page…';
+      fetch(CHECKOUT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (res) { return res.json().catch(function () { return {}; }); })
+        .then(function (json) {
+          if (json.ok && json.url) { window.location.href = json.url; return; }
+          throw new Error(json.error || "Couldn't open the payment page. Email support@classq.tech and we'll invoice you instead.");
+        })
+        .catch(function (err) {
+          button.disabled = false;
+          status.className += ' error';
+          status.textContent = err.message;
+        });
+    });
+  })();
+
   // The form goes to the department-request edge function. It checks a hidden
   // field and how long the form was open, so a bot's quick fill is ignored.
   (function () {
