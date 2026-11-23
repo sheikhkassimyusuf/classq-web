@@ -83,7 +83,7 @@
   .store b { font-size: 17px; font-weight: 700; }
   .fine { margin: 14px 0 0; font-size: 15px; color: var(--muted); }
 
-  /* The timetable: today, the now line, what's open. */
+  /* The timetable: today, what's open, what's next. */
   .day {
     background: var(--page); border: 1px solid var(--rule); border-radius: 28px;
     padding: 26px 22px 18px; max-width: 460px; width: 100%; justify-self: center;
@@ -125,7 +125,6 @@
   .run li { display: grid; grid-template-columns: 132px 1fr; gap: 24px; padding: 24px 0; border-top: 1px solid var(--rule); }
   .run li:first-child { border-top: 0; padding-top: 0; }
   .run .time { font-size: 22px; line-height: 1.2; color: var(--blue); }
-  .run li.is-now .time { color: var(--now-text); }
   .run p { margin: 6px 0 0; color: var(--ink-2); }
   @media (max-width: 560px) { .run li { grid-template-columns: 1fr; gap: 6px; } }
 
