@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClassQ — Class Q&amp;A sorted by AI, answered in order</title>
 <meta name="description" content="ClassQ lets students ask questions in class without raising a hand. AI groups the ones that mean the same thing, writes out spoken questions and keeps the queue on topic, so instructors answer the most asked first.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://classq.tech/">
+<meta property="og:title" content="ClassQ: class Q&amp;A sorted by AI, answered in order">
+<meta property="og:description" content="Students ask without raising a hand. AI groups the questions that mean the same thing, so instructors answer the most asked first.">
+<meta property="og:image" content="https://classq.tech/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Five wordings of one question, grouped by AI into a single question in the instructor's view. Asked five ways, answered once.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/icon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,25 +136,62 @@
   .run p { margin: 6px 0 0; color: var(--ink-2); }
   @media (max-width: 560px) { .run li { grid-template-columns: 1fr; gap: 6px; } }
 
-  /* What the AI does: many wordings in, one question out. */
-  .merge { display: grid; grid-template-columns: 1fr 56px 1fr; gap: 20px; align-items: center; max-width: 920px; margin: 0 0 48px; }
-  @media (max-width: 760px) { .merge { grid-template-columns: 1fr; gap: 14px; } .merge .arrow { transform: rotate(90deg); justify-self: center; } }
-  .asked { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .asked li {
-    background: var(--page); border: 1px solid var(--rule); border-radius: 14px; padding: 10px 14px;
-    font-size: 15px; color: var(--ink-2); line-height: 1.4;
+  /* What the AI does: many wordings in, one question out, as the instructor sees it.
+     The same picture as marketing/promo/grouped-questions in the app repo. */
+  .ai-grid { display: grid; grid-template-columns: 1fr 460px; grid-template-areas: "head panel" "jobs panel"; grid-template-rows: auto 1fr; gap: 0 56px; align-items: start; }
+  .ai-grid > .ai-head { grid-area: head; }
+  .ai-grid > .jobs { grid-area: jobs; }
+  .ai-grid > .merge { grid-area: panel; }
+  @media (max-width: 940px) {
+    .ai-grid { grid-template-columns: 1fr; grid-template-areas: "head" "panel" "jobs"; }
+    .ai-grid > .merge { margin: 0 auto 48px; width: 100%; max-width: 460px; }
   }
-  .asked li:nth-child(2) { margin-left: 18px; }
-  .asked li:nth-child(3) { margin-left: 6px; }
-  .asked li:nth-child(4) { margin-left: 24px; }
-  .asked .more { background: none; border: 0; padding: 2px 14px; color: var(--muted); font-size: 14px; }
-  .merge .arrow { color: var(--blue); width: 56px; height: 24px; }
-  .grouped { background: var(--surface); border: 2px solid var(--blue); border-radius: 18px; padding: 18px 18px 16px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start; }
-  .grouped .count { grid-row: span 2; font-stretch: 75%; font-weight: 700; font-size: 44px; line-height: 1; color: var(--blue); font-variant-numeric: tabular-nums; }
-  .grouped b { font-size: 19px; line-height: 1.3; }
-  .grouped small { color: var(--muted); font-size: 14px; }
-  .jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-  @media (max-width: 860px) { .jobs { grid-template-columns: 1fr; gap: 22px; } }
+  .merge { margin: 0; background: var(--blue); border-radius: 28px; padding: 28px 24px 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+  .funnel { position: relative; width: 100%; margin-bottom: 52px; }
+  .funnel svg { position: absolute; inset: 0 0 -52px 0; width: 100%; height: calc(100% + 52px); overflow: visible; }
+  .asked { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .asked li {
+    background: var(--surface); border-radius: 999px; padding: 9px 16px; font-size: 14px; line-height: 22px;
+    color: var(--ink); white-space: nowrap; align-self: flex-start;
+  }
+  .asked li:nth-child(even) { align-self: flex-end; }
+  .asked li:nth-child(3) { margin-left: 22px; }
+  .asked li:nth-child(4) { margin-right: 14px; }
+  /* On phones the panel runs edge to edge, so each wording stays on one line. */
+  @media (max-width: 500px) {
+    .ai-grid > .merge { margin: 0 -20px 48px; width: auto; max-width: none; border-radius: 0; padding: 24px 14px 0; }
+    .asked li { font-size: 13px; padding: 8px 13px; }
+    .asked li:nth-child(3) { margin-left: 10px; }
+    .asked li:nth-child(4) { margin-right: 6px; }
+  }
+  @media (max-width: 350px) { .asked li { white-space: normal; } }
+  .ai-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); color: var(--blue); border-radius: 999px; padding: 8px 18px 8px 14px; font-weight: 700; font-size: 15px; position: relative; }
+  .ai-pill svg { width: 15px; height: 15px; }
+  .stem { width: 2px; height: 22px; background: rgba(255, 255, 255, 0.6); }
+
+  /* The instructor's question sheet, at the app's own sizes (InstructorQuestionSheet.tsx). */
+  .sheet { background: var(--surface); width: 100%; max-width: 390px; border-radius: 20px 20px 0 0; padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+  .sheet .handle { width: 36px; height: 4px; border-radius: 2px; background: var(--rule); align-self: center; margin-bottom: -10px; }
+  .sheet-head { display: flex; align-items: center; height: 44px; margin-bottom: -6px; }
+  .sheet-head .time { font-size: 26px; line-height: 28px; color: var(--ink); }
+  .sheet-head .meta { flex: 1; margin-left: 6px; font-size: 13px; color: var(--muted); align-self: center; padding-top: 6px; }
+  .sheet-head .icons { display: flex; margin-right: -10px; color: var(--ink-2); }
+  .sheet-head .icons span { width: 44px; height: 44px; display: grid; place-items: center; }
+  .sheet svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sheet .q { margin: 0; font-size: 20px; line-height: 27px; font-weight: 700; }
+  .originals { display: flex; flex-direction: column; gap: 10px; }
+  .originals p { margin: 0; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink-2); }
+  .originals ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .originals li { font-size: 15px; line-height: 21px; }
+  .originals li small { display: block; margin-top: 1px; font-size: 13px; line-height: 18px; color: var(--muted); }
+  .composer { display: flex; gap: 8px; }
+  .composer .input { flex: 1; height: 48px; border: 1.5px solid #7E889D; border-radius: 12px; padding: 0 14px; display: flex; align-items: center; font-size: 15px; color: var(--muted); }
+  .composer .mic { width: 48px; height: 48px; border-radius: 12px; background: var(--track); display: grid; place-items: center; color: var(--ink); }
+  .actions { display: flex; gap: 10px; }
+  .actions span { height: 52px; border-radius: 12px; display: grid; place-items: center; font-size: 16px; font-weight: 700; }
+  .actions .skip { flex: 1; border: 1.5px solid #7E889D; color: var(--ink); }
+  .actions .mark { flex: 1.5; background: var(--blue); color: #fff; }
+  .jobs { display: grid; grid-template-columns: 1fr; gap: 26px; }
   .jobs h3 { margin-bottom: 6px; }
   .jobs p { margin: 0; color: var(--ink-2); }
   .ai-note { margin: 40px 0 0; font-size: 15px; color: var(--muted); max-width: 52em; }
@@ -274,41 +320,81 @@
 
   <section class="white" id="ai" aria-labelledby="ai-title">
     <div class="wrap">
-      <h2 id="ai-title">AI reads every question, so you don't have to.</h2>
-      <p class="intro">
-        In a class of 200, the same doubt arrives worded twenty ways. ClassQ's
-        AI reads each question as it's sent and works on it before it reaches
-        the queue.
-      </p>
+      <div class="ai-grid">
+        <div class="ai-head">
+          <h2 id="ai-title">AI reads every question, so you don't have to.</h2>
+          <p class="intro">
+            In a class of 200, the same doubt arrives worded twenty ways. ClassQ's
+            AI reads each question as it's sent and works on it before it reaches
+            the queue.
+          </p>
+        </div>
 
-      <div class="merge" aria-label="Many wordings of one question become one question with a count">
-        <ul class="asked">
-          <li>is big O the same as big theta??</li>
-          <li>When do we use Θ instead of O?</li>
-          <li>difference between upper bound and tight bound</li>
-          <li>Why does the slide say Θ(n log n) not O(n log n)</li>
-          <li class="more">and 19 more like them</li>
-        </ul>
-        <svg class="arrow" viewBox="0 0 56 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h50M42 3l10 9-10 9"/></svg>
-        <div class="grouped">
-          <span class="count">23</span>
-          <b>What's the difference between Big&#8209;O and Big&#8209;Theta?</b>
-          <small>One question, grouped by AI, first in the queue</small>
-        </div>
-      </div>
+        <figure class="merge" aria-labelledby="merge-caption">
+          <figcaption id="merge-caption" hidden>Five students ask the same thing in different words. AI groups them into one question, and the instructor sees every original wording with who asked it.</figcaption>
+          <div class="funnel">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <!-- Each curve starts under its chip (x as % of the width, y at the chip row) and ends at the pill. -->
+              <g fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" vector-effect="non-scaling-stroke">
+                <path d="M35 7 C35 63, 48 58, 48 100" vector-effect="non-scaling-stroke"/>
+                <path d="M77 24 C77 70, 52 66, 52 100" vector-effect="non-scaling-stroke"/>
+                <path d="M41 41 C41 76, 49 73, 49 100" vector-effect="non-scaling-stroke"/>
+                <path d="M55 58 C55 83, 51 81, 51 100" vector-effect="non-scaling-stroke"/>
+                <path d="M32 75 C32 90, 50 89, 50 100" vector-effect="non-scaling-stroke"/>
+              </g>
+            </svg>
+            <ul class="asked">
+              <li>Does Dijkstra work with negative weights?</li>
+              <li>What if an edge is negative?</li>
+              <li>why does dijkstra break on negative edges</li>
+              <li>Can we use Dijkstra if some costs are below zero?</li>
+              <li>Negative edge weights and Dijkstra?</li>
+            </ul>
+          </div>
+          <span class="ai-pill"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0 L9.9 6.1 L16 8 L9.9 9.9 L8 16 L6.1 9.9 L0 8 L6.1 6.1 Z"/></svg>Grouped by AI</span>
+          <span class="stem" aria-hidden="true"></span>
+          <div class="sheet">
+            <span class="handle" aria-hidden="true"></span>
+            <div class="sheet-head">
+              <span class="time">14</span><span class="meta">asked, 1st in line</span>
+              <span class="icons" aria-hidden="true">
+                <span><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+              </span>
+            </div>
+            <p class="q">Can Dijkstra handle negative edges?</p>
+            <div class="originals">
+              <p>Asked 5 ways, upvoted by 9 more</p>
+              <ul>
+                <li>Does Dijkstra work with negative weights?<small>Priya Natarajan</small></li>
+                <li>What if an edge is negative?<small>Sam Okafor</small></li>
+                <li>why does dijkstra break on negative edges<small>Jordan Lee</small></li>
+                <li>Can we use Dijkstra if some costs are below zero?<small>Maya Haddad</small></li>
+                <li>Negative edge weights and Dijkstra?<small>Leo Fischer</small></li>
+              </ul>
+            </div>
+            <div class="composer" aria-hidden="true">
+              <span class="input">Write a reply</span>
+              <span class="mic"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></span>
+            </div>
+            <div class="actions" aria-hidden="true"><span class="skip">Skip</span><span class="mark">Mark answered</span></div>
+          </div>
+        </figure>
 
-      <div class="jobs">
-        <div>
-          <h3>Groups what means the same</h3>
-          <p>Questions are matched by meaning, not by matching words. Each group gets one clear wording and a count, and the instructor can still open every original.</p>
-        </div>
-        <div>
-          <h3>Writes out what's said</h3>
-          <p>Students can say a question instead of typing it, and check the words before sending. Instructors' voice replies come with a transcript.</p>
-        </div>
-        <div>
-          <h3>Keeps class on topic</h3>
-          <p>Each question is checked before it posts. Harassment, spam and anything that doesn't belong in class is turned away, and students can still report what slips through.</p>
+        <div class="jobs">
+          <div>
+            <h3>Groups what means the same</h3>
+            <p>Questions are matched by meaning, not by matching words. Each group gets one clear wording and a count, and the instructor can still open every original.</p>
+          </div>
+          <div>
+            <h3>Writes out what's said</h3>
+            <p>Students can say a question instead of typing it, and check the words before sending. Instructors' voice replies come with a transcript.</p>
+          </div>
+          <div>
+            <h3>Keeps class on topic</h3>
+            <p>Each question is checked before it posts. Harassment, spam and anything that doesn't belong in class is turned away, and students can still report what slips through.</p>
+          </div>
         </div>
       </div>
 
