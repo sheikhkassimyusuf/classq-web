@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClassQ — Questions in class, answered in order</title>
-<meta name="description" content="ClassQ lets students ask and upvote questions during class without raising a hand. Instructors answer the most asked first, live or between classes.">
+<title>ClassQ — Class Q&amp;A sorted by AI, answered in order</title>
+<meta name="description" content="ClassQ lets students ask questions in class without raising a hand. AI groups the ones that mean the same thing, writes out spoken questions and keeps the queue on topic, so instructors answer the most asked first.">
 <link rel="icon" type="image/png" href="assets/icon-64.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,6 +127,29 @@
   .run p { margin: 6px 0 0; color: var(--ink-2); }
   @media (max-width: 560px) { .run li { grid-template-columns: 1fr; gap: 6px; } }
 
+  /* What the AI does: many wordings in, one question out. */
+  .merge { display: grid; grid-template-columns: 1fr 56px 1fr; gap: 20px; align-items: center; max-width: 920px; margin: 0 0 48px; }
+  @media (max-width: 760px) { .merge { grid-template-columns: 1fr; gap: 14px; } .merge .arrow { transform: rotate(90deg); justify-self: center; } }
+  .asked { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .asked li {
+    background: var(--page); border: 1px solid var(--rule); border-radius: 14px; padding: 10px 14px;
+    font-size: 15px; color: var(--ink-2); line-height: 1.4;
+  }
+  .asked li:nth-child(2) { margin-left: 18px; }
+  .asked li:nth-child(3) { margin-left: 6px; }
+  .asked li:nth-child(4) { margin-left: 24px; }
+  .asked .more { background: none; border: 0; padding: 2px 14px; color: var(--muted); font-size: 14px; }
+  .merge .arrow { color: var(--blue); width: 56px; height: 24px; }
+  .grouped { background: var(--surface); border: 2px solid var(--blue); border-radius: 18px; padding: 18px 18px 16px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start; }
+  .grouped .count { grid-row: span 2; font-stretch: 75%; font-weight: 700; font-size: 44px; line-height: 1; color: var(--blue); font-variant-numeric: tabular-nums; }
+  .grouped b { font-size: 19px; line-height: 1.3; }
+  .grouped small { color: var(--muted); font-size: 14px; }
+  .jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  @media (max-width: 860px) { .jobs { grid-template-columns: 1fr; gap: 22px; } }
+  .jobs h3 { margin-bottom: 6px; }
+  .jobs p { margin: 0; color: var(--ink-2); }
+  .ai-note { margin: 40px 0 0; font-size: 15px; color: var(--muted); max-width: 52em; }
+
   /* Screens */
   .screens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
   @media (max-width: 860px) { .screens { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; } }
@@ -185,9 +208,10 @@
   <div class="wrap bar-inner">
     <a class="wordmark" href="/"><img src="assets/icon-64.png" alt="" width="32" height="32">ClassQ</a>
     <nav aria-label="Sections">
+      <a class="extra" href="#ai">AI</a>
       <a class="extra" href="#how">How it works</a>
       <a class="extra" href="#pricing">Pricing</a>
-      <a href="support.html">Support</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </div>
 </header>
@@ -196,11 +220,12 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap hero-grid">
       <div>
-        <h1 id="hero-title">Every question in class, answered in order.</h1>
+        <h1 id="hero-title">Every question in class, sorted by AI and answered in order.</h1>
         <p class="lede">
-          Students ask from their phones without raising a hand and upvote the
-          questions they share. Similar ones are grouped, the most asked rise
-          to the top, and instructors answer them live or between classes.
+          Students ask from their phones without raising a hand. ClassQ's AI
+          reads every question, groups the ones that mean the same thing and
+          puts the most asked on top, so instructors answer what the class
+          needs, live or between classes.
         </p>
         <div class="stores">
           <div class="store" aria-label="Coming soon on the App Store">
@@ -213,7 +238,7 @@
           </div>
         </div>
         <p class="fine">Free for students. Instructors choose a plan for the courses they run.</p>
-        <p class="setup">Teaching a large course this spring? <a href="mailto:support@classq.tech?subject=Setting%20up%20ClassQ%20for%20spring">We'll set it up with you in 15 minutes.</a></p>
+        <p class="setup">Teaching a large course this spring? <a href="contact.html?topic=teaching">We'll set it up with you in 15 minutes.</a></p>
       </div>
 
       <!-- Home in the app: today, what's open, what's next. -->
@@ -247,7 +272,55 @@
     </div>
   </section>
 
-  <section class="white" id="how" aria-labelledby="how-title">
+  <section class="white" id="ai" aria-labelledby="ai-title">
+    <div class="wrap">
+      <h2 id="ai-title">AI reads every question, so you don't have to.</h2>
+      <p class="intro">
+        In a class of 200, the same doubt arrives worded twenty ways. ClassQ's
+        AI reads each question as it's sent and works on it before it reaches
+        the queue.
+      </p>
+
+      <div class="merge" aria-label="Many wordings of one question become one question with a count">
+        <ul class="asked">
+          <li>is big O the same as big theta??</li>
+          <li>When do we use Θ instead of O?</li>
+          <li>difference between upper bound and tight bound</li>
+          <li>Why does the slide say Θ(n log n) not O(n log n)</li>
+          <li class="more">and 19 more like them</li>
+        </ul>
+        <svg class="arrow" viewBox="0 0 56 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h50M42 3l10 9-10 9"/></svg>
+        <div class="grouped">
+          <span class="count">23</span>
+          <b>What's the difference between Big&#8209;O and Big&#8209;Theta?</b>
+          <small>One question, grouped by AI, first in the queue</small>
+        </div>
+      </div>
+
+      <div class="jobs">
+        <div>
+          <h3>Groups what means the same</h3>
+          <p>Questions are matched by meaning, not by matching words. Each group gets one clear wording and a count, and the instructor can still open every original.</p>
+        </div>
+        <div>
+          <h3>Writes out what's said</h3>
+          <p>Students can say a question instead of typing it, and check the words before sending. Instructors' voice replies come with a transcript.</p>
+        </div>
+        <div>
+          <h3>Keeps class on topic</h3>
+          <p>Each question is checked before it posts. Harassment, spam and anything that doesn't belong in class is turned away, and students can still report what slips through.</p>
+        </div>
+      </div>
+
+      <p class="ai-note">
+        The AI receives the words of questions and voice recordings, never names
+        or email addresses, and each person agrees before anything is sent.
+        Details are in the <a href="privacy.html">privacy policy</a>.
+      </p>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-title">
     <div class="wrap">
       <h2 id="how-title">How a session runs.</h2>
       <p class="intro">
@@ -273,7 +346,7 @@
           <span class="time">During class</span>
           <div>
             <h3>The most asked rise to the top</h3>
-            <p>As a student types, questions like theirs appear, so they upvote instead of asking again. Similar questions are grouped into one with a count. Classmates never see who asked.</p>
+            <p>As a student types, questions like theirs appear, so they upvote instead of asking again. AI groups the ones that mean the same thing into one, with a count. Classmates never see who asked.</p>
           </div>
         </li>
         <li>
@@ -281,6 +354,13 @@
           <div>
             <h3>Answered in order, seen by everyone</h3>
             <p>Instructors and TAs take the queue from the top: answer out loud and mark it answered, reply in writing or by voice, or skip. The class sees each change straight away.</p>
+          </div>
+        </li>
+        <li>
+          <span class="time">10:50 AM</span>
+          <div>
+            <h3>Check the room with a poll</h3>
+            <p>Ask a quick multiple-choice question from the session. Students answer on their phones, you watch the results come in, and the class sees them when you close it. Nobody sees who picked what.</p>
           </div>
         </li>
         <li>
@@ -294,7 +374,7 @@
     </div>
   </section>
 
-  <section aria-labelledby="screens-title">
+  <section class="white" aria-labelledby="screens-title">
     <div class="wrap">
       <h2 id="screens-title">One app for both sides of the room.</h2>
       <p class="intro">The same app for students, instructors and TAs. It shows each person what they need.</p>
@@ -315,7 +395,7 @@
     </div>
   </section>
 
-  <section class="white" aria-labelledby="who-title">
+  <section aria-labelledby="who-title">
     <div class="wrap">
       <h2 id="who-title">Built for how classes run.</h2>
       <p class="intro">A 12-person seminar or a 400-person intro, in a lecture hall, on Zoom or both. Nothing to set up during class.</p>
@@ -325,6 +405,7 @@
           <ul>
             <li><b>Ask without raising a hand</b><span>Type it or say it. Classmates see the question, never your name.</span></li>
             <li><b>Upvote what you want answered</b><span>See where your question is in line, and when it's answered.</span></li>
+            <li><b>Answer polls</b><span>Tap an answer when your instructor asks the room. Nobody sees your pick.</span></li>
             <li><b>Keep every answer</b><span>Look back at any session's questions and replies, including past courses.</span></li>
             <li><b>Free</b><span>Join with the join code your instructor shares.</span></li>
           </ul>
@@ -332,7 +413,8 @@
         <div class="side">
           <h3>For instructors and TAs</h3>
           <ul>
-            <li><b>One queue instead of a scrolling chat</b><span>Grouped and ordered by how many asked, or by when, for office hours.</span></li>
+            <li><b>One queue instead of a scrolling chat</b><span>Grouped by AI and ordered by how many asked, or by when, for office hours.</span></li>
+            <li><b>Live polls</b><span>Check understanding mid-lecture and see the results as they come in.</span></li>
             <li><b>Reply your way</b><span>Out loud in class, in writing, or by voice with a transcript.</span></li>
             <li><b>Sessions that run themselves</b><span>A weekly schedule opens and closes each session. Move or cancel one and the class is told.</span></li>
             <li><b>Between classes</b><span>Everything still waiting, from every course, in the Questions tab.</span></li>
@@ -352,7 +434,7 @@
     </div>
   </section>
 
-  <section id="pricing" aria-labelledby="pricing-title">
+  <section class="white" id="pricing" aria-labelledby="pricing-title">
     <div class="wrap">
       <h2 id="pricing-title">Free for students.</h2>
       <p class="intro">Instructors choose a plan for the courses they run, and it covers each course's first TAs. More TAs, and co-instructors, have a plan of their own. Students join with a join code and never pay.</p>
@@ -364,7 +446,8 @@
           <ul>
             <li>Join any number of courses</li>
             <li>Ask, upvote and follow the queue</li>
-            <li>Voice questions, written out</li>
+            <li>Voice questions, written out by AI</li>
+            <li>Answer polls</li>
             <li>Every question and answer kept</li>
           </ul>
         </div>
@@ -379,7 +462,9 @@
             <li>TA or co-teach in any course</li>
             <li>Unlimited sessions</li>
             <li>AI question grouping</li>
-            <li>Voice replies with transcripts</li>
+            <li>AI checks on every question</li>
+            <li>Voice replies with AI transcripts</li>
+            <li>Live polls</li>
             <li>Pin priority questions</li>
           </ul>
         </div>
@@ -394,7 +479,9 @@
             <li>TA or co-teach in any course</li>
             <li>Unlimited sessions</li>
             <li>AI question grouping</li>
-            <li>Voice replies with transcripts</li>
+            <li>AI checks on every question</li>
+            <li>Voice replies with AI transcripts</li>
+            <li>Live polls</li>
             <li>Pin priority questions</li>
           </ul>
         </div>
@@ -402,7 +489,7 @@
     </div>
   </section>
 
-  <section class="white" id="faq" aria-labelledby="faq-title">
+  <section id="faq" aria-labelledby="faq-title">
     <div class="wrap">
       <h2 id="faq-title">Questions, answered.</h2>
       <div class="faq" style="margin-top:32px">
@@ -419,6 +506,14 @@
           <p>Only courses running at the same time. A course stops counting when it ends, and next term's courses count against next term, not this one. Past courses stay, with every question and answer.</p>
         </details>
         <details>
+          <summary>How does ClassQ use AI?</summary>
+          <p>For three jobs: it groups questions that mean the same thing and gives each group one clear wording, it writes out voice questions and voice replies, and it checks each question before it posts. It receives the words of questions and recordings, never names or email addresses, and everyone agrees before anything is sent.</p>
+        </details>
+        <details>
+          <summary>Can I run polls?</summary>
+          <p>Yes, in any session. Write a question with two to six answers and start it. Students answer from the session, you see the results live, and they see them when you close it. Answers are counted, never shown by name.</p>
+        </details>
+        <details>
           <summary>Are questions anonymous?</summary>
           <p>To other students, yes: they never see who asked or who upvoted. The course's instructors and TAs can see who asked, so they can follow up.</p>
         </details>
@@ -428,7 +523,7 @@
         </details>
         <details>
           <summary>What stops questions that don't belong?</summary>
-          <p>Every question is checked before it posts, and inappropriate ones are turned away. Students can also report a question; instructors are told and can hide it or keep it.</p>
+          <p>AI checks every question before it posts, and inappropriate ones are turned away. Students can also report a question; instructors are told and can hide it or keep it.</p>
         </details>
         <details>
           <summary>Can I be reminded before class?</summary>
@@ -442,10 +537,10 @@
     </div>
   </section>
 
-  <section class="close" aria-labelledby="close-title">
+  <section class="white close" aria-labelledby="close-title">
     <div class="wrap">
       <h2 id="close-title">Bring every question into the room.</h2>
-      <p>ClassQ is coming to iPhone, iPad and Android. Teaching this spring? Email <a href="mailto:support@classq.tech?subject=Setting%20up%20ClassQ%20for%20spring">support@classq.tech</a> and we'll set up your course with you before the first class.</p>
+      <p>ClassQ is coming to iPhone, iPad and Android. Teaching this spring? <a href="contact.html?topic=teaching">Write to us</a> and we'll set up your course with you before the first class.</p>
       <div class="stores">
         <div class="store" aria-label="Coming soon on the App Store">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.86-3.08.38-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.38C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08ZM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z"/></svg>
@@ -468,7 +563,7 @@
       <a href="terms.html">Terms</a>
       <a href="delete-account.html">Delete your account</a>
       <a href="support.html">Support</a>
-      <a href="mailto:support@classq.tech">support@classq.tech</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </div>
 </footer>

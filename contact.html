@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact ClassQ</title>
+<meta name="description" content="Write to the ClassQ team: help with the app, setting up a course, or plans and billing. We reply within one to two business days.">
+<link rel="icon" type="image/png" href="assets/icon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&display=swap" rel="stylesheet">
+<style>
+  /* The app's "Timetable" palette, as on the home page. */
+  :root {
+    --page: #F4F6FA;
+    --surface: #FFFFFF;
+    --rule: #DDE2EC;
+    --ink: #121A2B;
+    --ink-2: #414B60;
+    --muted: #5B6477;
+    --blue: #2747E8;
+    --blue-soft: #E3E9FF;
+    --blue-edge: rgba(39, 71, 232, 0.32);
+    --danger: #C4321C;
+    --on-blue: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #0C111D; --surface: #151C2C; --rule: #2A3348; --ink: #EEF1F7; --ink-2: #C3CADA; --muted: #9AA3B7;
+      --blue: #8FA3FF; --blue-soft: rgba(143,163,255,0.16); --blue-edge: rgba(143,163,255,0.4); --danger: #FF8A75; --on-blue: #0C111D;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    font-family: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--page); color: var(--ink); font-size: 17px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--blue); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .bar { border-bottom: 1px solid var(--rule); }
+  .bar-inner { height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .wordmark {
+    display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; font-stretch: 87.5%;
+    color: var(--ink); text-decoration: none;
+  }
+  .wordmark img { width: 32px; height: 32px; border-radius: 8px; }
+  .bar nav { display: flex; gap: 24px; font-size: 15px; font-weight: 600; }
+  .bar nav a { color: var(--ink-2); text-decoration: none; }
+
+  main { flex: 1; padding: 56px 0 80px; }
+  .grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; gap: 32px; } }
+  h1 {
+    font-size: clamp(38px, 6vw, 56px); line-height: 1.0; font-weight: 800; font-stretch: 87.5%;
+    letter-spacing: -0.01em; margin: 0 0 18px;
+  }
+  .lede { font-size: 19px; color: var(--ink-2); margin: 0 0 28px; max-width: 26em; }
+  .aside p { margin: 0 0 14px; color: var(--ink-2); }
+  .aside .reply { font-weight: 600; color: var(--ink); }
+
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 20px; padding: 28px; }
+  @media (max-width: 480px) { .card { padding: 20px; } }
+  form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 18px; }
+  @media (max-width: 560px) { form { grid-template-columns: 1fr; } }
+  .full { grid-column: 1 / -1; }
+  label, legend { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600; }
+  label em, legend em { font-style: normal; font-weight: 400; color: var(--muted); }
+  input, textarea {
+    font: inherit; font-size: 16px; font-weight: 400; color: var(--ink); background: var(--page);
+    border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; width: 100%;
+  }
+  textarea { min-height: 160px; resize: vertical; line-height: 1.5; }
+  input:focus, textarea:focus { outline: 3px solid var(--blue-edge); border-color: var(--blue); }
+
+  /* What it's about: one choice, drawn as the app's chips. */
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  legend { margin-bottom: 8px; padding: 0; }
+  .topics { display: flex; flex-wrap: wrap; gap: 8px; }
+  .topics input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .topics span {
+    display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 20px;
+    border: 1px solid var(--rule); background: var(--page); color: var(--ink-2); font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .topics input:checked + span { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+  .topics input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .send {
+    justify-self: start; min-height: 52px; padding: 0 28px; border-radius: 14px; border: 0;
+    background: var(--blue); color: var(--on-blue); font: inherit; font-weight: 700; cursor: pointer;
+  }
+  .send:disabled { opacity: 0.6; cursor: default; }
+  .status { margin: 0; font-size: 15px; color: var(--muted); min-height: 1.5em; }
+  .status.error { color: var(--danger); font-weight: 600; }
+  .thanks h2 { font-size: 30px; line-height: 1.1; font-weight: 800; font-stretch: 87.5%; margin: 0 0 10px; }
+  .thanks p { margin: 0 0 12px; color: var(--ink-2); }
+  [hidden] { display: none !important; }
+
+  footer { padding: 32px 0 48px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+  footer a { color: var(--ink-2); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="wordmark" href="/"><img src="assets/icon-64.png" alt="" width="32" height="32">ClassQ</a>
+    <nav aria-label="Pages">
+      <a href="support.html">Support</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+    <div class="aside">
+      <h1>Write to us.</h1>
+      <p class="lede">Help with the app, setting up a course, or a question about plans. A person on the ClassQ team reads every message.</p>
+      <p class="reply">We reply within one to two business days.</p>
+      <p>Stuck on something common, like joining a course or notifications? The <a href="support.html">support page</a> may answer it straight away.</p>
+      <p>You can also email <a href="mailto:support@classq.tech">support@classq.tech</a>.</p>
+    </div>
+
+    <div class="card">
+      <form id="contact-form" novalidate>
+        <fieldset class="full">
+          <legend>What's it about?</legend>
+          <div class="topics">
+            <label><input type="radio" name="topic" value="using" checked><span>Using ClassQ</span></label>
+            <label><input type="radio" name="topic" value="teaching"><span>Teaching with ClassQ</span></label>
+            <label><input type="radio" name="topic" value="billing"><span>Plans and billing</span></label>
+            <label><input type="radio" name="topic" value="other"><span>Something else</span></label>
+          </div>
+        </fieldset>
+        <label><span>Your name <em>(optional)</em></span><input name="name" autocomplete="name" maxlength="120"></label>
+        <label>Email<input name="email" type="email" autocomplete="email" required maxlength="200" placeholder="ex. you@university.edu"></label>
+        <label class="full">Message<textarea name="message" required maxlength="4000" id="message"></textarea></label>
+        <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="send" type="submit">Send message</button>
+        <p class="status full" id="status" role="status"></p>
+      </form>
+      <div class="thanks" id="thanks" hidden>
+        <h2>Message sent.</h2>
+        <p>We'll reply to <b id="thanks-email"></b> within one to two business days.</p>
+        <p><a href="/">Back to classq.tech</a></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 ClassQ</span>
+    <nav aria-label="Legal and support">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="delete-account.html">Delete your account</a>
+      <a href="support.html">Support</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // The form goes to the contact edge function, which checks a hidden field
+  // and how long the form was open, so a bot's quick fill is ignored.
+  (function () {
+    var ENDPOINT = 'https://mupzsxyzqudkuljqtsdo.supabase.co/functions/v1/contact';
+    var HINTS = {
+      using: 'What were you trying to do, and what happened? Include the course’s join code if it’s about a course.',
+      teaching: 'Your course, how many students, and when it starts. We can set it up with you in 15 minutes.',
+      billing: 'Which plan, and whether you bought it on iPhone or Android.',
+      other: ''
+    };
+    var form = document.getElementById('contact-form');
+    var status = document.getElementById('status');
+    var message = document.getElementById('message');
+    var startedAt = Date.now();
+
+    // classq.tech/contact?topic=teaching opens on that topic.
+    var asked = new URLSearchParams(window.location.search).get('topic');
+    if (asked && HINTS.hasOwnProperty(asked)) form.querySelector('input[value="' + asked + '"]').checked = true;
+    var hint = function () { message.placeholder = HINTS[form.topic.value] || ''; };
+    form.addEventListener('change', hint);
+    hint();
+
+    var fail = function (text) {
+      status.className = 'status full error';
+      status.textContent = text;
+    };
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var data = new FormData(form);
+      var email = String(data.get('email') || '').trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { fail('Enter your email address, so we can reply.'); form.email.focus(); return; }
+      if (!String(data.get('message') || '').trim()) { fail('Write your message.'); message.focus(); return; }
+
+      var button = form.querySelector('button');
+      button.disabled = true;
+      status.className = 'status full';
+      status.textContent = 'Sending…';
+      var body = { started_at: startedAt };
+      data.forEach(function (value, key) { body[key] = value; });
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (res) { return res.json().catch(function () { return {}; }).then(function (json) { return { ok: res.ok && json.ok, json: json }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error(result.json.error || '');
+          form.hidden = true;
+          document.getElementById('thanks-email').textContent = email;
+          document.getElementById('thanks').hidden = false;
+        })
+        .catch(function (err) {
+          button.disabled = false;
+          status.className = 'status full error';
+          status.textContent = '';
+          status.append((err && err.message) || "Couldn't send it. ");
+          if (!(err && err.message)) {
+            var a = document.createElement('a');
+            a.href = 'mailto:support@classq.tech';
+            a.textContent = 'Email support@classq.tech instead.';
+            status.append(a);
+          }
+        });
+    });
+  })();
+</script>
+</body>
+</html>
